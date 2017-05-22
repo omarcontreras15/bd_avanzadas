@@ -1,0 +1,128 @@
+
+
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>{{TITULO}}</title>
+	<link href="./public/css/bootstrap.css" rel='stylesheet' type='text/css' />
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="./public/js/jquery.min.js"></script>
+	<script src="./public/js/jquery-3.1.1.js"></script>
+	<script src="./public/js/bootstrap.js"></script>
+	<!-- Custom Theme files -->
+	<link href="./public/css/style.css" rel='stylesheet' type='text/css' />
+	<!-- Custom Theme files -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+	<script src="./public/js/easyResponsiveTabs.js" type="text/javascript"></script>
+<!--	<script type="text/javascript">
+			    $(document).ready(function () {
+			        $('#horizontalTab').easyResponsiveTabs({
+			            type: 'default', //Types: default, vertical, accordion           
+			            width: 'auto', //auto or any width like 600px
+			            fit: true   // 100% fit in a container
+			        });
+			    });
+			   </script>
+-->
+	<link href="public/css/bootstrap.css" rel='stylesheet' type='text/css' />
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="public/js/jquery.min.js"></script>
+	<!-- Custom Theme files -->
+	<link href="public/css/style.css" rel='stylesheet' type='text/css' />
+	<link href="public/css/menu.css" rel='stylesheet' type='text/css' />
+
+	<link href="public/css/jquery.dataTables.min.css">
+
+	<!-- Custom Theme files -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+	<!--webfont-->
+	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900' rel='stylesheet' type='text/css'>
+
+<!--	<script type="text/javascript">
+            $(document).ready(function () {
+                $('#horizontalTab').easyResponsiveTabs({
+                    type: 'default', //Types: default, vertical, accordion           
+                    width: 'auto', //auto or any width like 600px
+                    fit: true   // 100% fit in a container
+                });
+            });
+        </script>
+
+-->
+
+</head>
+
+<body>
+	<!----- start-header---->
+	<div class="wrapper">
+
+		<div class="container header_top">
+			<div align="right">
+			</div>
+			<div class="logo">
+				<a href="index.php"><img src="public/images/logo.png" alt=""></a>
+
+			</div>
+			<div class="navigation">
+    <a class="toggleMenu" href="#"><img src="public/images/nav_icon.png" alt="" /> </a>
+    <ul class="navig">
+        <li class="plan"><a href="#">&nbsp&nbsp&nbsp&nbsp&nbspEmpleado&nbsp&nbsp&nbsp&nbsp&nbsp</a>
+            <ul class="sub-nav">
+                <li><a href="index.php?mode=agregarSucursal">Agregar</a></li>
+                <li><a href="index.php?mode=consultarSucursales">Consultar</a></li>
+            </ul>
+        </li>
+        <li class="plan"><a href="#">&nbsp&nbsp&nbsp&nbsp&nbspTarea&nbsp&nbsp&nbsp&nbsp&nbsp</a>
+            <ul class="sub-nav">
+                <li><a href="index.php?mode=realizarPedido">Realizar</a></li>
+                <li><a href="index.php?mode=consultarPedidos">Consultar</a></li>
+            </ul>
+        </li>
+        <li class="plan"><a href="#">&nbsp&nbsp&nbsp&nbsp&nbspProyecto&nbsp&nbsp&nbsp&nbsp&nbsp</a>
+            <ul class="sub-nav">
+                <li><a href="index.php?mode=agregarProyecto">Agregar</a></li>
+                <li><a href="index.php?mode=consultarProyecto">Consultar</a></li>
+            </ul>
+        </li>         
+    </ul>
+    <script type="text/javascript" src="public/js/responsive-nav.js"></script>
+</div>
+		</div>
+
+
+		<!----start-header---->
+
+		<!----- //End-header---->
+
+		{{CONTENIDO}}
+
+		<div class="container footer">
+			<div class='row'>
+				<div class="col-md-1 flag_grid">
+
+					<img src="public/images/logo_ufps.png" />
+
+				</div>
+				<div class="col-md-9 flag_grid">
+					<div class="copy">
+
+						<p>&copy;2016 HIPERAUTO</p>
+						<p>Ender Ortega COD: 1151226 - Shirley Naranjo COD: 1151384 - Jefferson Murillo COD: 1151224</p>
+						<p>UFPS - 2016 II</p>
+					</div>
+
+				</div>
+			</div>
+			<div class="footer_bottom">
+
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

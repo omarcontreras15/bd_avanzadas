@@ -1,0 +1,55 @@
+
+<link href="public/css/ventana-consultar.css" rel='stylesheet' type='text/css'/>
+<link href="public/css/style.css" rel='stylesheet' type='text/css'/>
+<div class="main">
+    <div class="main2">
+        <h2>{{TITULO_VENTANA}}</h2>
+        <form id="consultar_cc">
+            <input type="hidden" name="mode" value="consultar-cc-diag-idea">
+            <input type="hidden" name="tipo-operacion" value="{{TIPO_OPERACION}}">
+            <input type="number" class="name" name="cc" placeholder="{{PLACEHOLDER}}" required="">
+            <input type="submit" value="CONSULTAR C.C.">  
+        </form>
+        <br> 
+        <div id="consulta_Num_Consecutivos" align="center">
+
+        </div>
+    </div></div>
+<script>
+    //funcion para que se ejecute el script cuando termine de cargar
+    $(document).ready(function () {
+
+        //funcion para agregar el ajax al submit del formulario
+        $("#consultar_cc").submit(function () {
+            //previene que se envien los datos por la url
+            event.preventDefault();
+
+            //convierte los datos del formulario a arrays
+            var datos = $(this).serializeArray();
+            //var con la url del archivo php
+            var url = "index.php";
+            //var con el id del elemento html en que desea insertar la info
+            //despues del procesamiento
+            var id = "#consulta_Num_Consecutivos";
+            //llama a la funcion ajax
+            realizarAjax(datos, url, id);
+        });
+        //funcion ajax para enviar formulario a php
+        function realizarAjax(datos, url1, id) {
+
+            $.ajax({
+                data: datos,
+                url: url1,
+                type: 'POST',
+                //esta funncion se ejecuta cuando el php a terminado de procesar
+                //con el resultado e inserta el resultado en algun elemento html
+                success: function (contenido) {
+                    $(id).html(contenido);
+                }
+            });
+        }
+
+
+
+    });
+</script>

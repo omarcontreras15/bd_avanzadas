@@ -1,0 +1,95 @@
+
+<div class='container contact'>
+
+    <div id="titulo">
+        <hr>
+        <h2><strong>Realizar Pedido</strong></h2>
+
+        <div class="container container-fixed">
+            <hr>
+
+            <form role="form" method="post" action="index.php" style="margin-right:50px">
+                <input type="hidden" name="mode" value="realizarPedidoFormulario">
+                <div class="col-xs-12">
+                    <div class="col-md-9">
+                        <div class="form-group">
+
+
+                            <div class="row">
+
+                                <div class="col-md-3"></div>
+                                <div class="col-md-4"><label>Entidad cliente:</label></div>
+                                <div class="col-md-4">
+                                    <select class="form-control" name="cod_emisor">
+                                            {{ENTIDAD_CLIENTE}}
+                                    </select>
+                                </div>
+
+                            </div>
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-3"></div>
+                                <div class="col-md-4"><label>Sucursal proveedora:</label></div>
+                                <div class="col-md-4">
+                                    <select class="form-control" name="cod_receptor">
+                                            {{SUCURSAL_PROVEEDORA}}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-3"></div>
+                                <div class="col-md-4"><label>Fecha de entrega:</label></div>
+                                <div class="col-md-4">
+                                    
+                               <input type="date" class="form-control"  name="fecha_entrega" required>
+                                </div>
+
+                            </div>
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-3"></div>
+                                <div class="col-md-4"><label>Tipo:</label></div>
+                                <div class="col-md-4">
+                                    <select class="form-control" name="tipo">
+                                            <option value="Normal">Normal</option>
+                                            <option value="Urgente">Urgente</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <hr>
+
+                            <div class "row">
+                                <div class="col-md-7"></div>
+                                <div class="col-md-3"><button class="btn btn-primary " type="submit">Añadir piezas</button></div>
+                            </div>
+                        </div>
+                        <br><br>
+                        <hr>
+                    </div>
+
+                    <div class="col-md-1">
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <img src="public/images/pedido1.png">
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
