@@ -95,7 +95,6 @@ class User extends Controller {
         }
         $this->showView($tablaHtmlCompleta);
      }
-<<<<<<< HEAD
 
 /* PEDIDO */
 
@@ -387,8 +386,6 @@ class User extends Controller {
 
 // Metodos pieza
 
-=======
->>>>>>> 1e59aa3f5b5161446b38af2bfc3b28d7c5461c7d
     public function agregarProyecto(){
         $registroPieza = $this->getTemplate("./app/views/accion/registroProyecto.html");
         $this->view = $this->renderView($this->view, "{{TITULO}}", "Registrar Pieza");

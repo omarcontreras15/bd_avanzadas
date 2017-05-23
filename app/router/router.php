@@ -38,7 +38,6 @@ class Router {
                     $this->user->consultarProyecto();
                     break;
 
-<<<<<<< HEAD
                 case "realizarTarea":
                     $this->user->realizarTarea();
                     break;
@@ -50,8 +49,7 @@ class Router {
                 case "finalizarPedido":
                     $this->user->finalizarPedido();
                     break;
-=======
->>>>>>> 1e59aa3f5b5161446b38af2bfc3b28d7c5461c7d
+
                 case "eliminarProyecto":
                     $this->user->eliminarProyecto($_GET);
                     break;
