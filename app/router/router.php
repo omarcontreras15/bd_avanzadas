@@ -15,11 +15,14 @@ class Router {
         if(isset($_GET["mode"])) {
             switch ($_GET["mode"]) {
                 case "agregarEmpleado":
-                    $this->user->agregarEmpleado();
+                    $this->user->formAgregarEmpleado();
                     break;
                 
                 case "consultarEmpleado":
                     $this->user->consultarEmpleado();
+                    break;
+                case "registrar-empleado":
+                    $this->user->registrarEmpleado($_GET);
                     break;
 
                 case "editarEmpleado":
@@ -51,6 +54,9 @@ class Router {
             switch ($_POST["mode"]) {
                 case "agregarProyectoFormulario":
                     $this->user->agregarFormProyecto($_POST);         
+                    break;
+                case "cargar-tareas":
+                  $this->user->cargarTareas($_POST["id"]);         
                     break;
 
                 default:
