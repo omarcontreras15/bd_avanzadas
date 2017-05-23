@@ -6,7 +6,6 @@ class User extends Controller {
 
     private $userModel;
     private $view;
-    private $d;
 
     public function __construct() {
         $this->userModel = new UserModel();
@@ -22,20 +21,20 @@ class User extends Controller {
 
 // Metodos sucursal
 
-    public function agregarSucursal() {
+    public function agregarEmpleado() {
         $registroSucursal = $this->getTemplate("./app/views/accion/registroAccion.html");
         $this->view = $this->renderView($this->view, "{{TITULO}}","Registrar Sucursal");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroSucursal);
         $this->showView($this->view);
     }
 
-    public function agregarFormSucursal($form) {
+    public function agregarFormEmpleado($form) {
         $mensaje = $this->userModel->registrarSucursal($form);
         $this->agregarSucursal();
         echo "<script language=JavaScript>alert('".$mensaje."');</script>";
         }
 
-    public function consultarSucursales() {
+    public function consultarEmpleados() {
         $registroSucursal = $this->getTemplate("./app/views/accion/listaSucursales.html");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroSucursal);
         $listadoSucursales = $this->userModel->mostrarSucursales();
@@ -59,7 +58,7 @@ class User extends Controller {
         $this->showView($this->view);
          }
 
-     public function editarSucursal($id){
+     public function editarEmpleado($id){
          $tablaHtml=$this->getTemplate("./app/views/accion/editaSucursal.html");
          $element = $this->userModel->buscarSucursal($id);
          $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $element[0]->getCod_entidad());
@@ -77,7 +76,7 @@ class User extends Controller {
         echo "<script language=JavaScript>alert('".$mensaje."');</script>";
      }
 
-    public function eliminarSucursal($form){
+    public function eliminarEmpleado($form){
         $this->userModel->eliminarSucursal($form['id']);
         $listadoSucursales = $this->userModel->mostrarSucursales();
         $tablaHtmlCompleta="";
@@ -96,6 +95,7 @@ class User extends Controller {
         }
         $this->showView($tablaHtmlCompleta);
      }
+<<<<<<< HEAD
 
 /* PEDIDO */
 
@@ -387,6 +387,8 @@ class User extends Controller {
 
 // Metodos pieza
 
+=======
+>>>>>>> 1e59aa3f5b5161446b38af2bfc3b28d7c5461c7d
     public function agregarProyecto(){
         $registroPieza = $this->getTemplate("./app/views/accion/registroProyecto.html");
         $this->view = $this->renderView($this->view, "{{TITULO}}", "Registrar Pieza");
@@ -396,9 +398,6 @@ class User extends Controller {
 
     public function agregarFormProyecto($form){
         $mensaje = $this->userModel->registrarProyecto($form);
-
-
-        
         $this->agregarProyecto();
         echo "<script language=JavaScript>alert('".$mensaje."');</script>";
 
@@ -429,24 +428,6 @@ class User extends Controller {
             $this->showView($this->view);
     }
 
-    public function editarPieza ($id) {
-        $tablaHtml = $this->getTemplate("./app/views/accion/editaPieza.html");
-        $element = $this->userModel->buscarPieza($id);
-        $tablaHtml = renderView($tablaHtml, "{{codigo}}", $element->getCod_pieza());
-        echo $element->getNombre();
-        $tablaHtml = renderView($tablaHtml, "{{nombre}}", $element->getNombre());
-        $this->view = $this->renderView($this->view, "{{TITULO}}","Editar Pieza");
-        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtml);
-        $this->showView($this->view);
-
-    }
-
-    public function editarPiezaFormulario($formulario){
-        $mensaje = $this->userModel->editarPiezaFormulario($formulario);
-        $this->consultarPiezas();
-        echo "<script language=JavaScript>alert('".$mensaje."');</script>";
-    }
-
     public function eliminarProyecto($form){
         $this->userModel->eliminarProyecto($form['id']);
        
@@ -468,33 +449,6 @@ class User extends Controller {
 
             $this->showView($tablaHtmlCompleta);
      }
-
-    public function inicioSesion() {
-        $menu;
-        $login = $this->getTemplate("./app/views/login.html");
-        if((!isset($_SESSION["user_id"]) || $_SESSION["user_id"]==null)){
-
-            $menu = $this->getTemplate("./app/views/components/menu-logout.html");
-        }else{
-            header("Location:index.php");
-            return;
-        }
-        $this->view = $this->renderView($this->view, "{{TITULO}}", "Iniciar Sesión");
-        $this->view = $this->renderView($this->view, "{{SESION}}", $menu);
-        $this->view = $this->renderView($this->view, "{{CONTENT}}", $login);
-        $this->showView($this->view);
-    }
-
-    public function login($user, $password) {
-        $pass = sha1($password);
-        $log = $this->userModel->login($user, $pass);
-        if($log) {
-            $this->index();
-        } else {
-            echo "<script> alert('La clave y el usuario no coinciden');</script>";
-            $this->inicioSesion();
-        }
-    }
 }
 
 ?>

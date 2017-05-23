@@ -14,20 +14,20 @@ class Router {
     public function router() {
         if(isset($_GET["mode"])) {
             switch ($_GET["mode"]) {
-                case "agregarSucursal":
-                    $this->user->agregarSucursal();
+                case "agregarEmpleado":
+                    $this->user->agregarEmpleado();
                     break;
                 
-                case "consultarSucursales":
-                    $this->user->consultarSucursales();
+                case "consultarEmpleado":
+                    $this->user->consultarEmpleado();
                     break;
 
-                case "editarSucursal":
-                    $this->user->editarSucursal($_GET["id"]);
+                case "editarEmpleado":
+                    $this->user->editarEmpleado($_GET["id"]);
                     break;
 
-                case "eliminarSucursal1":
-                    $this->user->eliminarSucursal($_GET);
+                case "eliminarEmpleado":
+                    $this->user->eliminarEmpleado($_GET);
                     break;
                     
                 case "agregarProyecto":
@@ -38,6 +38,7 @@ class Router {
                     $this->user->consultarProyecto();
                     break;
 
+<<<<<<< HEAD
                 case "realizarTarea":
                     $this->user->realizarTarea();
                     break;
@@ -49,27 +50,10 @@ class Router {
                 case "finalizarPedido":
                     $this->user->finalizarPedido();
                     break;
+=======
+>>>>>>> 1e59aa3f5b5161446b38af2bfc3b28d7c5461c7d
                 case "eliminarProyecto":
                     $this->user->eliminarProyecto($_GET);
-                    break;
-                case "editarPieza":
-                    $this->user->editarPieza($_GET["id"]);
-                    break;
-
-                case "consultarPedidos":
-                    $this->user->consultarPedidos();
-                    break;
-
-                case "eliminarPedido":
-                    $this->user->eliminarPedido($_GET);
-                    break;
-
-                case "verDetallePedido":
-                    $this->user->verDetallePedido($_GET);
-                    break;
-
-                case "editarPedido":
-                    $this->user->editarPedido($_GET);
                     break;
 
                     default:
@@ -79,28 +63,8 @@ class Router {
 
         } else if(isset($_POST["mode"])) {
             switch ($_POST["mode"]) {
-                case "agregarSucursalFormulario":
-                    $this->user->agregarFormSucursal($_POST);
-                    break;
-
-                case "editarSucursalFormulario":
-                    $this->user->editarSucursalFormulario($_POST);
-                    break;
-
                 case "agregarProyectoFormulario":
                     $this->user->agregarFormProyecto($_POST);         
-                    break;
-
-                case "editarPiezaFormulario":
-                    $this->user->editarPiezaFormulario($_POST);
-                    break;
-                
-                case "realizarPedidoFormulario":
-                    $this->user->realizarPedidoFormulario($_POST);
-                    break;
-
-                case "agregarPiezaPedido":
-                    $this->user->agregarPiezaPedido($_POST);
                     break;
 
                 default:
