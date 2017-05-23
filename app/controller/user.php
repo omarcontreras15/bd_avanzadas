@@ -99,20 +99,17 @@ class User extends Controller {
 
 /* PEDIDO */
 
-    public function realizarPedido(){
-        $entidades = $this->userModel->mostrarEnditdades();
-        $sucursales = $this->userModel->mostrarSucursales();
+    public function realizarTarea(){
+
+        $proyectos = $this->userModel->listarProyectos();
         $stringEntidades="";
         $stringSucursales="";
-        foreach($entidades as $element){
-                $stringEntidades.="<option value='".$element->getCod_entidad()."'>".$element->getNombre()."</option>";
+
+        foreach($proyectos as $key => $val){
+                $stringEntidades.="<option value='".$key."'>".$val["nombre"]."</option>";
         }
         
-        foreach($sucursales as $element){
-                $stringSucursales.="<option value='".$element->getCod_entidad()."'>".$element->getNombre()."</option>";
-        }
-
-        $tablaHtml=$this->getTemplate("./app/views/accion/realizaPedido.html");
+        $tablaHtml=$this->getTemplate("./app/views/accion/realizaTarea.html");
         $tablaHtml=$this->renderView($tablaHtml, "{{ENTIDAD_CLIENTE}}", $stringEntidades);
         $tablaHtml=$this->renderView($tablaHtml, "{{SUCURSAL_PROVEEDORA}}", $stringSucursales);
         $this->view = $this->renderView($this->view, "{{TITULO}}","Realizar pedido");

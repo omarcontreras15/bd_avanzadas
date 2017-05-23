@@ -38,8 +38,8 @@ class Router {
                     $this->user->consultarProyecto();
                     break;
 
-                case "realizarPedido":
-                    $this->user->realizarPedido();
+                case "realizarTarea":
+                    $this->user->realizarTarea();
                     break;
 
                 case "eliminarPiezaPedido":
