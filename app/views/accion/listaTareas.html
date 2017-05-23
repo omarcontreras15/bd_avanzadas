@@ -1,0 +1,48 @@
+<div class="main">
+	<div class='container contact'>
+		<div id="titulo">
+			<hr>
+			<h2><strong>Listado de Tareas</strong></h2>
+			<hr>
+
+			<div>
+				<br>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Codigo</th>
+							<th>Nombre</th>
+							<th>Proyecto asociado</th>
+							<th>Opciones</th>
+
+						</tr>
+					</thead>
+					<tbody id="busqueda_exitosa">
+						{{CONTENIDO}}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+				  function realizarAjax(idTarea) {
+					var url = "index.php?mode=eliminarTarea&id="+idTarea;
+                    //var con el id del elemento html en que desea insertar la info
+                    //despues del procesamiento
+                    var id = "#busqueda_exitosa";
+                    //llama a la funcion ajax
+
+                    $.ajax({
+						cache: false,
+                        url: url,
+                        type: 'GET',
+                        //esta funncion se ejecuta cuando el php a terminado de procesar
+                        //con el resultado e inserta el resultado en algun elemento html
+                        success: function (array) {
+                            $(id).html(array);
+                        }
+                    });
+                }
+</script>
