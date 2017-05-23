@@ -96,25 +96,77 @@ class User extends Controller {
         $this->showView($tablaHtmlCompleta);
      }
 
-/* PEDIDO */
+/* CRUD TAREAS*/
 
     public function realizarTarea(){
-
         $proyectos = $this->userModel->listarProyectos();
-        $stringEntidades="";
-        $stringSucursales="";
-
+        $stringProyectos="";
         foreach($proyectos as $key => $val){
-                $stringEntidades.="<option value='".$key."'>".$val["nombre"]."</option>";
-        }
-        
+                $stringProyectos.="<option value='".$val["nombre"]."'>".$val["nombre"]."</option>";
+        }        
         $tablaHtml=$this->getTemplate("./app/views/accion/realizaTarea.html");
-        $tablaHtml=$this->renderView($tablaHtml, "{{ENTIDAD_CLIENTE}}", $stringEntidades);
-        $tablaHtml=$this->renderView($tablaHtml, "{{SUCURSAL_PROVEEDORA}}", $stringSucursales);
+        $tablaHtml=$this->renderView($tablaHtml, "{{PROYECTO}}", $stringProyectos);
         $this->view = $this->renderView($this->view, "{{TITULO}}","Realizar pedido");
         $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $tablaHtml);
         $this->showView($this->view);
+
      }
+
+
+     public function agregarFormTarea($form){
+        $mensaje = $this->userModel->registrarTarea($form);
+        $this->realizarTarea();
+        echo "<script language=JavaScript>alert('".$mensaje."');</script>";
+
+     }
+
+     public function consultarTarea(){
+        $registroPieza=$this->getTemplate("./app/views/accion/listaTareas.html");
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroPieza);
+        $listadoTareas = $this->userModel->listarTareas();
+        $tablaHtmlCompleta="";
+
+            foreach ($listadoTareas as $key => $val) {
+                $tablaHtml= $this->getTemplate("./app/views/components/tablaTareas.html");
+                $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
+                $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
+                $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
+                $var1="<a href='index.php?mode=editarPieza&id=".(string)$key."'>
+                <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
+                <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
+                $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
+
+            $tablaHtmlCompleta.=$tablaHtml;
+            }
+            $this->view = $this->renderView($this->view, "{{TITULO}}","Listado Piezas");
+            $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
+            $this->showView($this->view);
+     }
+
+     public function eliminarTarea($form){
+        $this->userModel->eliminarTarea($form['id']);
+       
+        $listadoTareas = $this->userModel->listarTareas();
+        $tablaHtmlCompleta="";
+
+            foreach ($listadoTareas as $key => $val) {
+                $tablaHtml= $this->getTemplate("./app/views/components/tablaTareas.html");
+                $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
+                $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
+                $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
+                $var1="<a href='index.php?mode=editarPieza&id=".(string)$key."'>
+                <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
+                <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
+                $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
+
+            $tablaHtmlCompleta.=$tablaHtml;
+            }
+
+            $this->showView($tablaHtmlCompleta);
+     }
+
+
+
 
      public function realizarPedidoFormulario($form){
          $fecha1 = explode("-", $form['fecha_entrega']);
@@ -384,7 +436,7 @@ class User extends Controller {
      }
 
 
-// Metodos pieza
+// CRUD PROYECTO
 
     public function agregarProyecto(){
         $registroPieza = $this->getTemplate("./app/views/accion/registroProyecto.html");

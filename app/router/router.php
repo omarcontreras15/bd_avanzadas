@@ -41,6 +41,10 @@ class Router {
                 case "realizarTarea":
                     $this->user->realizarTarea();
                     break;
+                
+                case "consultarTarea":
+                    $this->user->consultarTarea();
+                    break;
 
                 case "eliminarPiezaPedido":
                     $this->user->eliminarPiezaPedido($_GET);
@@ -54,6 +58,10 @@ class Router {
                     $this->user->eliminarProyecto($_GET);
                     break;
 
+                case "eliminarTarea":
+                    $this->user->eliminarTarea($_GET);
+                    break;
+
                     default:
                     header("Location:index.php");
                     break;
@@ -64,6 +72,11 @@ class Router {
                 case "agregarProyectoFormulario":
                     $this->user->agregarFormProyecto($_POST);         
                     break;
+
+                case "realizarTareaFormulario":
+                    $this->user->agregarFormTarea($_POST);         
+                    break;
+
 
                 default:
                     header("Location:index.php");
