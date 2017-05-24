@@ -15,19 +15,25 @@ class Router {
         if(isset($_GET["mode"])) {
             switch ($_GET["mode"]) {
                 case "agregarEmpleado":
-                    $this->user->agregarEmpleado();
+                    $this->user->formAgregarEmpleado();
                     break;
                 
                 case "consultarEmpleado":
-                    $this->user->consultarEmpleado();
+                    $this->user->consultarEmpleados();
+                    break;
+                case "registrar-empleado":
+                    $this->user->registrarEmpleado($_GET);
                     break;
 
-                case "editarEmpleado":
-                    $this->user->editarEmpleado($_GET["id"]);
+                case "editar-empleado":
+                    $this->user->formEditarEmpleado($_GET["id"]);
+                    break;
+                case "actualizar-empleado":
+                    $this->user->actualizarEmpleado($_GET);
                     break;
 
-                case "eliminarEmpleado":
-                    $this->user->eliminarEmpleado($_GET);
+                case "eliminar-empleado":
+                    $this->user->eliminarEmpleado($_GET["id"]);
                     break;
                     
                 case "agregarProyecto":
@@ -44,14 +50,6 @@ class Router {
                 
                 case "consultarTarea":
                     $this->user->consultarTarea();
-                    break;
-
-                case "eliminarPiezaPedido":
-                    $this->user->eliminarPiezaPedido($_GET);
-                    break;
-
-                case "finalizarPedido":
-                    $this->user->finalizarPedido();
                     break;
 
                 case "eliminarProyecto":
@@ -75,6 +73,9 @@ class Router {
             switch ($_POST["mode"]) {
                 case "agregarProyectoFormulario":
                     $this->user->agregarFormProyecto($_POST);         
+                    break;
+                case "cargar-tareas":
+                  $this->user->cargarTareas($_POST["id"]);         
                     break;
 
                 case "realizarTareaFormulario":

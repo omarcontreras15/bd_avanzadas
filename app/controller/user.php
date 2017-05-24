@@ -2,461 +2,297 @@
 
 include_once "./app/controller/controller.php";
 
-class User extends Controller {
+class User extends Controller
+{
 
     private $userModel;
     private $view;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->userModel = new UserModel();
         $this->view = $this->getTemplate("./app/views/index.html");
     }
 
-    public function index() {
+    public function index()
+    {
         $inicio = $this->getTemplate("./app/views/inicio.html");
-        $this->view = $this->renderView($this->view, "{{TITULO}}","Inicio");
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Inicio");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $inicio);
         $this->showView($this->view);
     }
 
-// Metodos sucursal
 
-    public function agregarEmpleado() {
-        $registroSucursal = $this->getTemplate("./app/views/accion/registroAccion.html");
-        $this->view = $this->renderView($this->view, "{{TITULO}}","Registrar Sucursal");
-        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroSucursal);
+    public function formAgregarEmpleado()
+    {
+        $contenido = $this->getTemplate("./app/views/accion/registroEmpleado.html");
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Registrar Empleado");
+        $combo = "<option value='ninguno'>Ninguno</option>";
+        $listadoProyectos = $this->userModel->listarProyectos();
+        foreach ($listadoProyectos as $key => $value) {
+            $combo .= "<option value='" . (string)$key . "'>" . $value['nombre'] . "</option>";
+        }
+        $contenido = $this->renderView($contenido, "{{COMBO_PROYECTOS}}", $combo);
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $contenido);
         $this->showView($this->view);
     }
 
-    public function agregarFormEmpleado($form) {
-        $mensaje = $this->userModel->registrarSucursal($form);
-        $this->agregarSucursal();
-        echo "<script language=JavaScript>alert('".$mensaje."');</script>";
+    public function cargarTareas($id)
+    {
+        $tareas = "";
+        $contenido = $this->getTemplate("./app/views/components/tareas-empleado.html");
+        $listaTareas = $this->userModel->listarTareasProyecto($id);
+        foreach ($listaTareas as $key => $value) {
+            $temp = $contenido;
+            $temp = $this->renderView($temp, "{{NOM_TAREA}}", $value['nom_tarea']);
+            $temp = $this->renderView($temp, "{{ID}}", ((string)$key));
+            $temp = $this->renderView($temp, "{{form_tarea}}"," ");
+            $tareas .= $temp;
+        }
+        echo $tareas;
+    }
+
+    public function cargarTareasEditar($id_proyecto, $arrayTareas)
+    {
+        $tareas = "";
+        $contenido = $this->getTemplate("./app/views/components/editar-tareas-empleado.html");
+        $listaTareas = $this->userModel->listarTareasProyecto($id_proyecto);
+        foreach ($listaTareas as $key => $value) {
+            $validarTarea=false;
+            $temp = $contenido;
+            $temp = $this->renderView($temp, "{{NOM_TAREA}}", $value['nom_tarea']);
+            $temp = $this->renderView($temp, "{{id_tarea}}", ((string)$key));
+
+            $formTarea=$this->getTemplate("./app/views/components/form-editar-tareas-empleado.html");
+
+            foreach ($arrayTareas as $tarea){
+                if((string)$key== $tarea['id_tarea']){
+                    $temp = $this->renderView($temp, "{{CHECKED}}","CHECKED");
+                    $formTarea=$this->renderView($formTarea, "{{ID_TAREA}}",$tarea['id_tarea']);
+                    $formTarea=$this->renderView($formTarea, "{{horas_trabajo}}",$tarea['horas_trabajo']);
+                    $formTarea=$this->renderView($formTarea, "{{cargo}}",$tarea['cargo']);
+                    $temp = $this->renderView($temp, "{{form_tarea}}", $formTarea);
+                    $validarTarea=true;
+                }
+            }
+
+            if($validarTarea==false){
+                $temp = $this->renderView($temp, "{{CHECKED}}"," ");
+                $temp = $this->renderView($temp, "{{form_tarea}}", " ");
+
+            }
+            $tareas .= $temp;
+        }
+        return $tareas;
+    }
+
+
+
+    public function registrarEmpleado($form)
+    {
+        $empleado = $this->userModel->buscarEmpleadoCC($form['cc']);
+
+        if ($empleado->count() == 0) {
+            $tareas = array();
+            if (isset($form["tareas-empleados"])) {
+                foreach ($form["tareas-empleados"] as $element) {
+
+                    $tarea = array(
+                        "id_tarea" => $element,
+                        "horas_trabajo" => (integer)$form["horas-trabajo-" . $element],
+                        "cargo" => $form["cargo-" . $element]
+                    );
+
+                    array_unshift($tareas, $tarea);
+                }
+            } else {
+                array_unshift($tareas, array());
+            }
+            $empleado = array(
+                "nombre_empleado" => $form['nombre_empleado'],
+                "cc" => (integer)$form['cc'],
+                "telefono" => (integer)$form['telefono'],
+                "direccion" => $form['direccion'],
+                "id_proyecto" => $form['id_proyecto'],
+                "tareas" => $tareas
+            );
+            $this->userModel->registrarEmpleado($empleado);
+            echo "<script>alert('El empleado  se registro exitosamente!'); window.location='index.php?mode=agregarEmpleado';</script>";
+        } else {
+            echo "<script>alert('El empleado ya se encuentra registrado, Por favor intentelo de nuevo');window.history.back();</script>";
         }
 
-    public function consultarEmpleados() {
-        $registroSucursal = $this->getTemplate("./app/views/accion/listaSucursales.html");
-        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroSucursal);
-        $listadoSucursales = $this->userModel->mostrarSucursales();
-        $tablaHtmlCompleta="";
+    }
 
-        foreach($listadoSucursales as $element) {
-            $tablaHtml=$this->getTemplate("./app/views/components/tablaSucursales.html");
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $element->getCod_entidad());
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$element->getNombre());
-            $tablaHtml = $this->renderView($tablaHtml, "{{direccion}}",$element->getDireccion() );
-            $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $element->getCiudad());
-            $var1="<a href='index.php?mode=editarSucursal&id=".$element->getCod_entidad()."'>
+
+    public function consultarEmpleados()
+    {
+        $consultaEmpleados = $this->getTemplate("./app/views/accion/listaEmpleados.html");
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $consultaEmpleados);
+        $listadoEmpleados = $this->userModel->listarEmpleados();
+        $tablaHtmlCompleta = "";
+
+        foreach ($listadoEmpleados as $element) {
+            $tablaHtml = $this->getTemplate("./app/views/components/tablaEmpleados.html");
+            $tablaHtml = $this->renderView($tablaHtml, "{{NOMBRE}}", $element['nombre_empleado']);
+            $tablaHtml = $this->renderView($tablaHtml, "{{CC}}", $element['cc']);
+            $tablaHtml = $this->renderView($tablaHtml, "{{DIRECCION}}", $element['direccion']);
+            $tablaHtml = $this->renderView($tablaHtml, "{{TELEFONO}}", $element['telefono']);
+            $var1 = "<a href='index.php?mode=editar-empleado&id=" . $element['_id']. "'>
             <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-            <button onclick='realizarAjax(".$element->getCod_entidad().")' type='button' class='btn btn-danger borrar'>Borrar</button>";
-            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
+            <a href='index.php?mode=eliminar-empleado&id=" .$element['_id']. "'>
+            <button type='button' class='btn btn-danger'>Borrar</button></a>";
+            $tablaHtml = $this->renderView($tablaHtml, "{{OPCIONES}}", $var1);
 
-        $tablaHtmlCompleta.=$tablaHtml;
+            $tablaHtmlCompleta .= $tablaHtml;
         }
-        $this->view = $this->renderView($this->view, "{{TITULO}}","Listado Sucursales");
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Consulta Empleados");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
         $this->showView($this->view);
-         }
+    }
 
-     public function editarEmpleado($id){
-         $tablaHtml=$this->getTemplate("./app/views/accion/editaSucursal.html");
-         $element = $this->userModel->buscarSucursal($id);
-         $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $element[0]->getCod_entidad());
-         $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$element[0]->getNombre());
-         $tablaHtml = $this->renderView($tablaHtml, "{{direccion}}",$element[0]->getDireccion() );
-         $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $element[0]->getCiudad());
-         $this->view = $this->renderView($this->view, "{{TITULO}}","Editar Sucursal");
-         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtml);
-         $this->showView($this->view);
-     }
-
-     public function editarSucursalFormulario($formulario){
-        $mensaje = $this->userModel->editarSucursalFormulario($formulario);
-        $this->consultarSucursales();
-        echo "<script language=JavaScript>alert('".$mensaje."');</script>";
-     }
-
-    public function eliminarEmpleado($form){
-        $this->userModel->eliminarSucursal($form['id']);
-        $listadoSucursales = $this->userModel->mostrarSucursales();
-        $tablaHtmlCompleta="";
-        foreach($listadoSucursales as $element) {
-            $tablaHtml=$this->getTemplate("./app/views/components/tablaSucursales.html");
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $element->getCod_entidad());
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$element->getNombre());
-            $tablaHtml = $this->renderView($tablaHtml, "{{direccion}}",$element->getDireccion() );
-            $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $element->getCiudad());
-            $var1="<a href='index.php?mode=editarSucursal&id=".$element->getCod_entidad()."'>
-            <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-            <button onclick='realizarAjax(".$element->getCod_entidad().")' type='button' class='btn btn-danger borrar'>Borrar</button>";
-            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
-
-        $tablaHtmlCompleta.=$tablaHtml;
+    public function formEditarEmpleado($id)
+    {
+        $idProyecto=null;
+        $tareas=null;
+        $contenido = $this->getTemplate("./app/views/accion/editarEmpleado.html");
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Editar Empleado");
+        $empleado=$this->userModel->buscarEmpleadoID($id);
+        foreach ($empleado as $value){
+            $idProyecto=$value['id_proyecto'];
+            $tareas=$value['tareas'];
+            $contenido = $this->renderView($contenido, "{{nombre_empleado}}", $value['nombre_empleado']);
+            $contenido = $this->renderView($contenido, "{{cc}}", $value['cc']);
+            $contenido = $this->renderView($contenido, "{{telefono}}", $value['telefono']);
+            $contenido = $this->renderView($contenido, "{{direccion}}", $value['direccion']);
         }
-        $this->showView($tablaHtmlCompleta);
-     }
+        $combo = "<option value='ninguno'>Ninguno</option>";
+        $listadoProyectos = $this->userModel->listarProyectos();
+        foreach ($listadoProyectos as $key => $value) {
+            if(!((string)$key==$idProyecto)) {
+                $combo .= "<option value='" . (string)$key . "'>" . $value['nombre'] . "</option>";
+            }else if($idProyecto=="ninguno"){
 
-/* CRUD TAREAS*/
+            }else{
+                $combo .= "<option selected value='" . (string)$key . "'>" . $value['nombre'] . "</option>";
+            }
+        }
+        $htmlTareas=$this->cargarTareasEditar($idProyecto,$tareas);
+        $contenido = $this->renderView($contenido, "{{grupo_tareas}}", $htmlTareas);
+        $contenido = $this->renderView($contenido, "{{id_empleado}}", $id);
+        $contenido = $this->renderView($contenido, "{{COMBO_PROYECTOS}}", $combo);
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $contenido);
+        $this->showView($this->view);
+    }
 
-    public function realizarTarea(){
+    public function actualizarEmpleado($form){
+        $this->eliminarEmpleado($form['id_empleado']);
+        $this->registrarEmpleado($form);
+    }
+
+
+    public function eliminarEmpleado($id)
+    {
+        $this->userModel->eliminarEmpleado($id);
+        header("Location: index.php?mode=consultarEmpleado");
+
+    }
+
+    public function realizarTarea()
+    {
         $proyectos = $this->userModel->listarProyectos();
-        $stringProyectos="";
-        foreach($proyectos as $key => $val){
-                $stringProyectos.="<option value='".$val["nombre"]."'>".$val["nombre"]."</option>";
-        }        
-        $tablaHtml=$this->getTemplate("./app/views/accion/realizaTarea.html");
-        $tablaHtml=$this->renderView($tablaHtml, "{{PROYECTO}}", $stringProyectos);
-        $this->view = $this->renderView($this->view, "{{TITULO}}","Realizar pedido");
-        $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $tablaHtml);
+        $stringProyectos = "";
+        foreach ($proyectos as $key => $val) {
+            $stringProyectos .= "<option value='" . $val["nombre"] . "'>" . $val["nombre"] . "</option>";
+        }
+        $tablaHtml = $this->getTemplate("./app/views/accion/realizaTarea.html");
+        $tablaHtml = $this->renderView($tablaHtml, "{{PROYECTO}}", $stringProyectos);
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Realizar pedido");
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtml);
         $this->showView($this->view);
 
-     }
+    }
 
 
-     public function agregarFormTarea($form){
+    public function agregarFormTarea($form)
+    {
         $mensaje = $this->userModel->registrarTarea($form);
         $this->realizarTarea();
-        echo "<script language=JavaScript>alert('".$mensaje."');</script>";
+        echo "<script language=JavaScript>alert('" . $mensaje . "');</script>";
 
-     }
+    }
 
-     public function consultarTarea(){
-        $registroPieza=$this->getTemplate("./app/views/accion/listaTareas.html");
+    public function consultarTarea()
+    {
+        $registroPieza = $this->getTemplate("./app/views/accion/listaTareas.html");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroPieza);
         $listadoTareas = $this->userModel->listarTareas();
-        $tablaHtmlCompleta="";
+        $tablaHtmlCompleta = "";
 
-            foreach ($listadoTareas as $key => $val) {
-                $tablaHtml= $this->getTemplate("./app/views/components/tablaTareas.html");
-                $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
-                $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
-                $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
-                $var1="<a href='index.php?mode=editarPieza&id=".(string)$key."'>
+        foreach ($listadoTareas as $key => $val) {
+            $tablaHtml = $this->getTemplate("./app/views/components/tablaTareas.html");
+            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
+            $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-                <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
-                $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
+                <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";
+            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1);
 
-            $tablaHtmlCompleta.=$tablaHtml;
-            }
-            $this->view = $this->renderView($this->view, "{{TITULO}}","Listado Piezas");
-            $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
-            $this->showView($this->view);
-     }
-
-     public function eliminarTarea($form){
-        $this->userModel->eliminarTarea($form['id']);
-       
-        $listadoTareas = $this->userModel->listarTareas();
-        $tablaHtmlCompleta="";
-
-            foreach ($listadoTareas as $key => $val) {
-                $tablaHtml= $this->getTemplate("./app/views/components/tablaTareas.html");
-                $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
-                $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
-                $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
-                $var1="<a href='index.php?mode=editarPieza&id=".(string)$key."'>
-                <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-                <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
-                $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
-
-            $tablaHtmlCompleta.=$tablaHtml;
-            }
-
-            $this->showView($tablaHtmlCompleta);
-     }
-
-
-
-
-     public function realizarPedidoFormulario($form){
-         $fecha1 = explode("-", $form['fecha_entrega']);
-         $array = getdate();
-         $resta = ($array['year']-$fecha1[0])+($array['mon']-$fecha1[1])+($array['mday']-$fecha1[2]);
-       
-         if($form['cod_emisor']==$form['cod_receptor']){
-             $mensaje="ERROR ! EL CLIENTE Y EL PROVEEDOR NO PUEDE SER EL MISMO, INTENTELO DE NUEVO";             
-             echo "<script language=JavaScript>alert('".$mensaje."');</script>";
-             $this->realizarPedido();
-             
-             }else if($resta>0){
-                 $mensaje="ERROR ! LA FECHA DE ENTREGA ES MENOR A LA DE HOY, INTENTELO DE NUEVO";             
-             echo "<script language=JavaScript>alert('".$mensaje."');</script>";
-             $this->realizarPedido();
-
-             }
-
-             else{
-
-
-         $resultado = $this->userModel->hacerPedido($form['cod_emisor'], $form['cod_receptor'], $form['fecha_entrega'], $form['tipo']);
-         $piezas = $this->userModel->verAlmacen($resultado[7]);
-
-         $agregarPiezasPedido = $this->getTemplate("./app/views/accion/registrarPiezasPedido.html");
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{cod_pedido}}",$resultado[0]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{emisor}}",$resultado[1]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{receptor}}",$resultado[2]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{fecha_pedido}}",$resultado[3]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{fecha_entrega}}",$resultado[4]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{estado}}",$resultado[5]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{tipo}}",$resultado[6]);
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{cod_receptor}}",$resultado[7]);
-         
-         $htmlProductos="";         
-        
-          while($row = mysqli_fetch_array($piezas)){
-            $htmlProductos.="<option value='".$row['cod_pieza']."'>".$row['cod_pieza']." - ".$row['nombre']." - Disp:".$row['stock']."</option>";
-
+            $tablaHtmlCompleta .= $tablaHtml;
         }
-        
-        if($htmlProductos==""){
-                $htmlProductos.="<option >NO HAY PRODUCTOS</option>";
-                $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{deshabilitar}}","disabled");
-
-        }
-         
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{PRODUCTOS}}",$htmlProductos);
-         $this->view = $this->renderView($this->view, "{{TITULO}}","Agregar piezas");
-         $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $agregarPiezasPedido);
-         $this->showView($this->view);
-         }
-     }
-
-
-     public function mostrarPiezasPedidos($cod_pedido){
-        $result = $this->userModel->listarPiezasPedido($cod_pedido);
-        $tablaHtmlcompleta="";
-        while($row = mysqli_fetch_array($result)){
-
-            $tablaHtml=$this->getTemplate("./app/views/components/tabla-detalles-pedido.html");
-             $tablaHtml = $this->renderView($tablaHtml, "{{cantidad}}",$row['cantidad']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $row['cod_pieza']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$row['nombre']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{opcion}}", "<button onclick='realizarAjax1($cod_pedido,".$row['cod_pieza'].")' type='button' class='btn btn-danger borrar'>Borrar</button>" );
-            $tablaHtmlcompleta.=$tablaHtml;
-        }
-        if($tablaHtmlcompleta==""){
-            $this->showView("<br><h4 id='titulo'>NO HAY PRODUCTOS EN ESTE PEDIDO</h4>");
-            return;
-
-        }
-        $contenido=$this->getTemplate("./app/views/components/tabla-pedido.html");
-        $contenido = $this->renderView($contenido, "{{CONTENIDO}}", $tablaHtmlcompleta);
-        $this->showView($contenido);
-     }
-
-     public function agregarPiezaPedido($form){
-         $sePuede = $this->userModel->agregarPiezaPedido($form['cod_receptor'], $form['cod_pedido'], $form['cod_pieza'] ,$form['cantidad']);
-         if(!$sePuede){
-             $mensaje="ERROR ! LA CANTIDAD SOLICITADA SUPERA LAS EXISTENCIAS, INTENTE DE NUEVO";             
-             echo "<script language=JavaScript>alert('".$mensaje."');</script>";
-         }
-            $this->mostrarPiezasPedidos($form['cod_pedido']);
-        
-    }
-
-    public function finalizarPedido(){
-        $this->index();
-        $mensaje="SU PEDIDO SE HA GUARDADO CON EXITO, PRONTO LE SERÁ DESPACHADO";             
-             echo "<script language=JavaScript>alert('".$mensaje."');</script>";
-    }
-
-
-    public function eliminarPiezaPedido($get){
-        $this->userModel->eliminarPiezaPedido($get);
-        $this->mostrarPiezasPedidos($get['cod_pedido']);
-    }
-
-    public function consultarPedidos(){
-        $registroSucursal = $this->getTemplate("./app/views/accion/listaPedidos.html");
-        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroSucursal);
-        $listadoPedidos = $this->userModel->mostrarPedidos();
-        $tablaHtmlCompleta="";
-
-        foreach($listadoPedidos as $element) {
-            $tablaHtml=$this->getTemplate("./app/views/components/tablaSucursales.html");
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $element->getCod_pedido());
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$element->getCod_emisor());
-            $tablaHtml = $this->renderView($tablaHtml, "{{direccion}}",$element->getCod_receptor() );
-            $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $element->getFecha_pedido());
-            $var1="<a href='index.php?mode=verDetallePedido&id=".$element->getCod_pedido()."'>
-            <button type='button' class='btn btn-success'>Ver detalle</button></a>&nbsp<a href='index.php?mode=editarPedido&id=".$element->getCod_pedido()."'>
-            <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-            <button onclick='realizarAjax(".$element->getCod_pedido().")' type='button' class='btn btn-danger borrar'>Borrar</button>";
-            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
-        
-        $tablaHtmlCompleta.=$tablaHtml;
-        }
-        $this->view = $this->renderView($this->view, "{{TITULO}}","Listado de Pedidos");
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Listado Piezas");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
         $this->showView($this->view);
-
-
     }
 
-    public function eliminarPedido($form){
-        $this->userModel->eliminarPedido($form['id']);
-        $listadoPedidos = $this->userModel->mostrarPedidos();
-        $tablaHtmlCompleta="";
+    public function eliminarTarea($form)
+    {
+        $this->userModel->eliminarTarea($form['id']);
 
-        foreach($listadoPedidos as $element) {
-            $tablaHtml=$this->getTemplate("./app/views/components/tablaSucursales.html");
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $element->getCod_pedido());
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$element->getCod_emisor());
-            $tablaHtml = $this->renderView($tablaHtml, "{{direccion}}",$element->getCod_receptor() );
-            $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $element->getFecha_pedido());
-            $var1="<a href='index.php?mode=verDetallePedido&id=".$element->getCod_pedido()."'>
-            <button type='button' class='btn btn-success'>Ver detalle</button></a>&nbsp<a href='index.php?mode=editarPedido&id=".$element->getCod_pedido()."'>
-            <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-            <button onclick='realizarAjax(".$element->getCod_pedido().")' type='button' class='btn btn-danger borrar'>Borrar</button>";
-            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
-        
-        $tablaHtmlCompleta.=$tablaHtml;
+        $listadoTareas = $this->userModel->listarTareas();
+        $tablaHtmlCompleta = "";
+
+        foreach ($listadoTareas as $key => $val) {
+            $tablaHtml = $this->getTemplate("./app/views/components/tablaTareas.html");
+            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
+            $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
+                <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
+                <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";
+            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1);
+
+            $tablaHtmlCompleta .= $tablaHtml;
         }
-        
+
         $this->showView($tablaHtmlCompleta);
-
     }
 
-    
 
-    public function verDetallePedido($cod_pedido){
-         
-         $element = $this->userModel->buscarPedido($cod_pedido['id']);
-         
-         $agregarPiezasPedido = $this->getTemplate("./app/views/accion/mostrarDetallePedido.html");
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{cod_pedido}}",$element->getCod_pedido());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{emisor}}",$element->getCod_emisor());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{receptor}}",$element->getCod_receptor());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{fecha_pedido}}",$element->getFecha_pedido());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{fecha_entrega}}",$element->getFecha_entrega());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{estado}}",$element->getEstado());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{tipo}}",$element->getTipo());
-         
-         $htmlProductos="";
-         
-
-        $result = $this->userModel->listarPiezasPedido($cod_pedido['id']);
-        $tablaHtmlcompleta="";
-        
-        while($row = mysqli_fetch_array($result)){
-
-            $tablaHtml=$this->getTemplate("./app/views/components/tabla-detalles-pedido.html");
-             $tablaHtml = $this->renderView($tablaHtml, "{{cantidad}}",$row['cantidad']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $row['cod_pieza']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$row['nombre']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{opcion}}", "-" );
-            $tablaHtmlcompleta.=$tablaHtml;
-        }
-
-        if($tablaHtmlcompleta==""){
-            $contenido="<br><h4 id='titulo'>NO HAY PRODUCTOS EN ESTE PEDIDO</h4>";
-            
-        }else{
-        $contenido=$this->getTemplate("./app/views/components/tabla-pedido.html");
-        $contenido = $this->renderView($contenido, "{{CONTENIDO}}", $tablaHtmlcompleta);
-        $variable="<hr>
-				<h3 id='titulo'>Piezas</h3>
-				<br>";
-        $contenido=$variable.$contenido;
-        }
-
-        
-
-        $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{PRODUCTOS}}", $contenido);
-         $this->view = $this->renderView($this->view, "{{TITULO}}","Detalles del pedido");
-         $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $agregarPiezasPedido);
-         
-         $this->showView($this->view);
-        
-     }
-
-     public function editarPedido($cod_pedido){
-
-         $element = $this->userModel->buscarPedido($cod_pedido['id']);
-         
-
-         $agregarPiezasPedido = $this->getTemplate("./app/views/accion/registrarPiezasPedido1.html");
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{cod_pedido}}",$element->getCod_pedido());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{emisor}}",$element->getCod_emisor());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{receptor}}",$element->getCod_receptor());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{fecha_pedido}}",$element->getFecha_pedido());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{fecha_entrega}}",$element->getFecha_entrega());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{estado}}",$element->getEstado());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{tipo}}",$element->getTipo());
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{cod_receptor}}",$element->getCod_proveedor());
-         
-
-         $piezas = $this->userModel->verAlmacen($element->getCod_proveedor());
-         $htmlProductos="";         
-        
-          while($row = mysqli_fetch_array($piezas)){
-            $htmlProductos.="<option value='".$row['cod_pieza']."'>".$row['cod_pieza']." - ".$row['nombre']." - Disp:".$row['stock']."</option>";
-
-        }
-        
-        if($htmlProductos==""){
-                $htmlProductos.="<option >NO HAY PRODUCTOS</option>";
-                $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{deshabilitar}}","disabled");
-
-        }
-
-         $result = $this->userModel->listarPiezasPedido($cod_pedido['id']);
-        $tablaHtmlcompleta="";
-        
-        while($row = mysqli_fetch_array($result)){
-
-            $tablaHtml=$this->getTemplate("./app/views/components/tabla-detalles-pedido.html");
-             $tablaHtml = $this->renderView($tablaHtml, "{{cantidad}}",$row['cantidad']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $row['cod_pieza']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}",$row['nombre']);
-            $tablaHtml = $this->renderView($tablaHtml, "{{opcion}}", "<button onclick='realizarAjax1(".$cod_pedido['id'].",".$row['cod_pieza'].")' type='button' class='btn btn-danger borrar'>Borrar</button>" );
-            $tablaHtmlcompleta.=$tablaHtml;
-        }
-
-        if($tablaHtmlcompleta==""){
-            $contenido="<br><h4 id='titulo'>NO HAY PRODUCTOS EN ESTE PEDIDO</h4>";
-            
-        }else{
-        $contenido=$this->getTemplate("./app/views/components/tabla-pedido.html");
-        $contenido = $this->renderView($contenido, "{{CONTENIDO}}", $tablaHtmlcompleta);
-        }
-
-
-        $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{PRODUCTOS1}}", $contenido);
-
-         
-         $agregarPiezasPedido = $this->renderView($agregarPiezasPedido, "{{PRODUCTOS}}",$htmlProductos);
-         $this->view = $this->renderView($this->view, "{{TITULO}}","Agregar piezas");
-         $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $agregarPiezasPedido);
-         $this->showView($this->view);
-
-
-
-
-     }
-
-
-// CRUD PROYECTO
-
-    public function agregarProyecto(){
+    public function agregarProyecto()
+    {
         $registroPieza = $this->getTemplate("./app/views/accion/registroProyecto.html");
         $this->view = $this->renderView($this->view, "{{TITULO}}", "Registrar Pieza");
-        $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $registroPieza);
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroPieza);
         $this->showView($this->view);
-   }
+    }
 
-    public function agregarFormProyecto($form){
+    public function agregarFormProyecto($form)
+    {
         $mensaje = $this->userModel->registrarProyecto($form);
         $this->agregarProyecto();
-        echo "<script language=JavaScript>alert('".$mensaje."');</script>";
+        echo "<script language=JavaScript>alert('" . $mensaje . "');</script>";
 
     }
 
 
-    public function consultarProyecto(){
-        $registroPieza=$this->getTemplate("./app/views/accion/listaProyectos.html");
+    public function consultarProyecto()
+    {
+        $registroPieza = $this->getTemplate("./app/views/accion/listaProyectos.html");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroPieza);
         $listadoProyectos = $this->userModel->listarProyectos();
+<<<<<<< HEAD
         $tablaHtmlCompleta="";
 
             foreach ($listadoProyectos as $key => $val) {
@@ -465,22 +301,34 @@ class User extends Controller {
                 $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
                 $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>
+=======
+        $tablaHtmlCompleta = "";
+
+        foreach ($listadoProyectos as $key => $val) {
+            $tablaHtml = $this->getTemplate("./app/views/components/tablaProyectos.html");
+            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
+            $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
+>>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-                <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
-                $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
+                <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";
+            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1);
 
-            $tablaHtmlCompleta.=$tablaHtml;
-            }
+            $tablaHtmlCompleta .= $tablaHtml;
+        }
 
-            $this->view = $this->renderView($this->view, "{{TITULO}}","Listado Piezas");
-            $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
-            $this->showView($this->view);
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Listado Piezas");
+        $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
+        $this->showView($this->view);
     }
 
-    public function eliminarProyecto($form){
+    public function eliminarProyecto($form)
+    {
         $this->userModel->eliminarProyecto($form['id']);
-       
+
         $listadoProyectos = $this->userModel->listarProyectos();
+<<<<<<< HEAD
         $tablaHtmlCompleta="";
 
             foreach ($listadoProyectos as $key => $val) {
@@ -489,13 +337,24 @@ class User extends Controller {
                 $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
                 $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>
+=======
+        $tablaHtmlCompleta = "";
+
+        foreach ($listadoProyectos as $key => $val) {
+            $tablaHtml = $this->getTemplate("./app/views/components/tablaProyectos.html");
+            $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
+            $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
+>>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
-                <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
-                $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
+                <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";
+            $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1);
 
-            $tablaHtmlCompleta.=$tablaHtml;
-            }
+            $tablaHtmlCompleta .= $tablaHtml;
+        }
 
+<<<<<<< HEAD
             $this->showView($tablaHtmlCompleta);
      }
 
@@ -512,6 +371,10 @@ class User extends Controller {
         $this->showView($this->view);
     }
 
+=======
+        $this->showView($tablaHtmlCompleta);
+    }
+>>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
 }
 
 ?>
