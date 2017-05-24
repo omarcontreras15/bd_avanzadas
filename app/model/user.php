@@ -34,7 +34,6 @@ class UserModel{
         return $respuesta;
     }
 
-<<<<<<< HEAD
     function buscarProyecto($id){
         $connection = new Mongo(); 
         $coleccionProyecto = $connection->admin->proyecto; 
@@ -43,7 +42,6 @@ class UserModel{
         return $result;
     }
 
-=======
     public  function listarTareasProyecto($id){
         $connection = new Mongo();
         $coleccionTarea = $connection->admin->tarea;
@@ -65,7 +63,6 @@ class UserModel{
         $connection->close();
         return $empleado;
     }
->>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
 
     public function buscarEmpleadoID($id){
         $connection = new Mongo();

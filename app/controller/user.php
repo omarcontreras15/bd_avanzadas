@@ -292,7 +292,7 @@ class User extends Controller
         $registroPieza = $this->getTemplate("./app/views/accion/listaProyectos.html");
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $registroPieza);
         $listadoProyectos = $this->userModel->listarProyectos();
-<<<<<<< HEAD
+
         $tablaHtmlCompleta="";
 
             foreach ($listadoProyectos as $key => $val) {
@@ -300,8 +300,8 @@ class User extends Controller
                 $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
-                $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>
-=======
+                $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>";
+
         $tablaHtmlCompleta = "";
 
         foreach ($listadoProyectos as $key => $val) {
@@ -310,7 +310,7 @@ class User extends Controller
             $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
             $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
             $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
->>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
+
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
                 <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";
             $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1);
@@ -322,13 +322,14 @@ class User extends Controller
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $tablaHtmlCompleta);
         $this->showView($this->view);
     }
+    }
 
     public function eliminarProyecto($form)
     {
         $this->userModel->eliminarProyecto($form['id']);
 
         $listadoProyectos = $this->userModel->listarProyectos();
-<<<<<<< HEAD
+
         $tablaHtmlCompleta="";
 
             foreach ($listadoProyectos as $key => $val) {
@@ -336,8 +337,8 @@ class User extends Controller
                 $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
-                $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>
-=======
+                $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>";
+
         $tablaHtmlCompleta = "";
 
         foreach ($listadoProyectos as $key => $val) {
@@ -346,7 +347,7 @@ class User extends Controller
             $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
             $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
             $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
->>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
+
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
                 <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";
             $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1);
@@ -354,9 +355,10 @@ class User extends Controller
             $tablaHtmlCompleta .= $tablaHtml;
         }
 
-<<<<<<< HEAD
+
             $this->showView($tablaHtmlCompleta);
      }
+    }
 
     public function editarProyecto($id){
 
@@ -369,12 +371,8 @@ class User extends Controller
         $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $editarProyecto);
 
         $this->showView($this->view);
-    }
-
-=======
         $this->showView($tablaHtmlCompleta);
     }
->>>>>>> c9f3f91b4f71be6d24082dd97df29339eba9e5f4
 }
 
 ?>
