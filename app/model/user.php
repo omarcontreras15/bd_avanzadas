@@ -34,6 +34,14 @@ class UserModel{
         return $respuesta;
     }
 
+    function buscarProyecto($id){
+        $connection = new Mongo(); 
+        $coleccionProyecto = $connection->admin->proyecto; 
+        $result = $coleccionProyecto->findOne(array('_id' => new MongoId($id)));
+        $connection->close();
+        return $result;
+    }
+
 
 /*    *** CRUD DE TAREA *********************/
     

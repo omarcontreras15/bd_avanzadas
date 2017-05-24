@@ -58,6 +58,10 @@ class Router {
                     $this->user->eliminarProyecto($_GET);
                     break;
 
+                case "editarProyecto":
+                    $this->user->editarProyecto($_GET['id']);
+                    break;
+
                 case "eliminarTarea":
                     $this->user->eliminarTarea($_GET);
                     break;

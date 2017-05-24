@@ -464,7 +464,7 @@ class User extends Controller {
                 $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
-                $var1="<a href='index.php?mode=editarPieza&id=".(string)$key."'>
+                $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
                 <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
                 $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
@@ -488,7 +488,7 @@ class User extends Controller {
                 $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
                 $tablaHtml = $this->renderView($tablaHtml, "{{ciudad}}", $val["ciudad"]);
-                $var1="<a href='index.php?mode=editarPieza&id=".(string)$key."'>
+                $var1="<a href='index.php?mode=editarProyecto&id=".(string)$key."'>
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
                 <button onclick=realizarAjax('".(string)$key."') type='button' class='btn btn-danger borrar'>Borrar</button>";
                 $tablaHtml = $this->renderView($tablaHtml, "{{opciones}}", $var1 );
@@ -498,6 +498,20 @@ class User extends Controller {
 
             $this->showView($tablaHtmlCompleta);
      }
+
+    public function editarProyecto($id){
+
+        $proyecto = $this->userModel->buscarProyecto($id);
+        $editarProyecto = $this->getTemplate("./app/views/accion/editarProyecto.html");
+        $editarProyecto = $this->renderView($editarProyecto, "{{CODIGO}}", $proyecto["codigo"]);
+        $editarProyecto = $this->renderView($editarProyecto, "{{NOMBRE}}", $proyecto["nombre"]);
+        $editarProyecto = $this->renderView($editarProyecto, "{{CIUDAD}}", $proyecto["ciudad"]);
+        $this->view = $this->renderView($this->view, "{{TITULO}}", "Editar Proyecto");
+        $this->view = $this->renderView($this->view,"{{CONTENIDO}}", $editarProyecto);
+
+        $this->showView($this->view);
+    }
+
 }
 
 ?>
