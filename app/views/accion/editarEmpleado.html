@@ -1,0 +1,151 @@
+<div class='container contact'>
+
+    <div id="titulo">
+        <hr>
+        <h2><strong>Editar Empleado </strong></h2>
+
+        <div class="container container-fixed">
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <form id="form-empleado" method="GET" style="margin-right:50px">
+                        <input type="hidden" name="mode" value="actualizar-empleado">
+                        <input type="hidden" name="id_empleado" value="{{id_empleado}}">
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-md-2"></div>
+                                <div class="col-md-2"><label>Nombre y apellidos </label></div>
+                                <div class="col-md-5"><input type="text" class="form-control" name="nombre_empleado"
+                                                             required placeholder="Por favor ingrese el nombre"
+                                                             value="{{nombre_empleado}}"></div>
+
+                            </div>
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-2"></div>
+                                <div class="col-md-2"><label>CC</label></div>
+                                <div class="col-md-5"><input type="number" min="0" max="999999999999999"
+                                                             class="form-control" name="cc" value="{{cc}}" required
+                                                             placeholder="Por favor ingrese la cc"></div>
+
+                            </div>
+
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-2"></div>
+                                <div class="col-md-2"><label>Telefono</label></div>
+                                <div class="col-md-5"><input type="number" min="0" max="999999999999999"
+                                                             class="form-control" name="telefono" value="{{telefono}}" required
+                                                             placeholder="Por favor ingrese el telefono"></div>
+
+                            </div>
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-2"></div>
+                                <div class="col-md-2"><label>Dirección:</label></div>
+                                <div class="col-md-5"><input type="text" class="form-control" name="direccion" value="{{direccion}}" required
+                                                             required placeholder="Por favor ingrese la direccion">
+                                </div>
+
+                            </div>
+                            <br>
+                            <div class="row">
+
+                                <div class="col-md-2"></div>
+                                <div class="col-md-2"><label>Seleccionar Proyecto:</label></div>
+                                <div class="col-md-5">
+                                    <select id="combo-proyecto" class="form-control" name="id_proyecto" required>
+                                        {{COMBO_PROYECTOS}}
+                                    </select>
+                                </div>
+
+                            </div>
+                            <hr>
+                            <div>
+                                <h2><strong>Registro de Tareas Por Empleado </strong></h2><br>
+                                <div id="grupo-tareas">
+                                {{grupo_tareas}}
+                                </div>
+                            </div>
+                            <br><br>
+                            <div class="row">
+                                <div class="col-md-12"><br><br></div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary " type="submit">Actualizar Información Del Empleado</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <br><br>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //ESPACIO PARA COLOCAR EL CODIGO AJAX QUE ENVIE LOS ARCHIVOS
+    //funcion para que se ejecute el script cuando termine de cargar
+    $(document).ready(function () {
+        cargarEventos();
+
+        $("#combo-proyecto").on("click", function () {
+            var id = $(this).val();
+            // console.log($(this).val());
+            cargarTareas(id)
+        });
+
+
+        function cargarEventos() {
+            $(".tareas").on("click", function () {
+                var check = $(this).is(":checked");
+                var id = $(this).attr("id");
+                if (check) {
+                    var html = '<fieldset class="contentStyle"><legend class="titleStyle">Información de la tarea</legend><div class="row"><div class="col-md-6"><label> Horas de trabajo: </label></div> <div class="col-md-6"><input class="form-control" min="0" type="number" name="horas-trabajo-' + id + '"></div></div><div class="row"><div class="col-md-6"><label>Cargo: </label></div><div class="col-md-6"><input class="form-control" type="text" name="cargo-' + id + '"></div></div></fieldset><br><hr>';
+                    $("#formulario-" + id).empty();
+                    $("#formulario-" + id).append(html);
+                } else {
+                    $("#formulario-" + id).empty();
+                }
+
+            });
+        }
+
+        function cargarTareas(id1) {
+            var datos = {
+                "mode": "cargar-tareas",
+                "id": id1
+            }
+            realizarAjaxTareas(datos);
+        }
+
+        //funcion ajax para enviar formulario a php
+        function realizarAjaxTareas(datos) {
+            $.ajax({
+                data: datos,
+                url: "index.php",
+                type: 'POST',
+                //esta funcion se ejecuta antes de enviar los datos al php
+                beforeSend: function () {
+                },
+                //esta funncion se ejecuta cuando el php a terminado de procesar
+                //con el resultado e inserta el resultado en algun elemento html
+                success: function (response) {
+                    $("#grupo-tareas").html(response);
+                    cargarEventos();
+                },
+                error: function (xhr, status, error) {
+                    $("#ventana-emergente-error").show();
+                }
+            });
+
+        }
+
+
+    });
+
+</script>

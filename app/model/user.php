@@ -35,8 +35,9 @@ class UserModel{
     }
 
     public  function listarTareasProyecto($id){
-        $connection = new Mongo(); 
-        $coleccionTarea = $connection->admin->tarea; 
+        $connection = new Mongo();
+        $coleccionTarea = $connection->admin->tarea;
+        $connection->close();
         return $coleccionTarea->find(array( "id_proyecto"=>"$id"));
     }
 
@@ -44,13 +45,40 @@ class UserModel{
         $connection = new Mongo();
         $coleccionEmpleado = $connection->admin->empleado;
         $coleccionEmpleado->insert($empleado);
+        $connection->close();
     }
 
-    public function buscarEmpleado($cc){
+    public function buscarEmpleadoCC($cc){
         $connection = new Mongo();
         $coleccionEmpleado = $connection->admin->empleado;
-        return $coleccionEmpleado->find(array("cc"=>(integer)$cc));
+        $empleado=$coleccionEmpleado->find(array("cc"=>(integer)$cc));
+        $connection->close();
+        return $empleado;
     }
+
+    public function buscarEmpleadoID($id){
+        $connection = new Mongo();
+        $coleccionEmpleado = $connection->admin->empleado;
+        $empleado=$coleccionEmpleado->find(array("_id" => new MongoId((string)$id)));
+        $connection->close();
+        return $empleado;
+    }
+
+    public function listarEmpleados(){
+        $connection = new Mongo();
+        $coleccionEmpleado = $connection->admin->empleado;
+        $empleados=$coleccionEmpleado->find();
+        $connection->close();
+        return $empleados ;
+    }
+
+    public function eliminarEmpleado($id){
+        $connection = new Mongo();
+        $coleccionEmpleado = $connection->admin->empleado;
+        $coleccionEmpleado->remove(array("_id" => new MongoId((string)$id)), array("justOne" => true));
+        $connection->close();
+    }
+
 
     public function registrarTarea($form){
         $connection = new Mongo(); 
@@ -78,6 +106,7 @@ class UserModel{
         $connection->close();
         return $respuesta;
     }
+
    
 
 }
