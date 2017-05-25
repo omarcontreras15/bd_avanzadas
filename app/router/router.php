@@ -75,7 +75,7 @@ class Router {
                     $this->user->agregarFormProyecto($_POST);         
                     break;
                 case "cargar-tareas":
-                  $this->user->cargarTareas($_POST["id"]);         
+                  $this->user->cargarTareas();         
                     break;
 
                 case "realizarTareaFormulario":

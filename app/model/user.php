@@ -33,20 +33,20 @@ class UserModel{
         $connection->close();
         return $respuesta;
     }
+   
 
-    function buscarProyecto($id){
+    function buscarNomProyecto($id){
         $connection = new Mongo(); 
         $coleccionProyecto = $connection->admin->proyecto; 
         $result = $coleccionProyecto->findOne(array('_id' => new MongoId($id)));
-        $connection->close();
-        return $result;
+        return $result['nombre'];
     }
 
-    public  function listarTareasProyecto($id){
+    public  function listarTareasProyecto(){
         $connection = new Mongo();
         $coleccionTarea = $connection->admin->tarea;
         $connection->close();
-        return $coleccionTarea->find(array( "id_proyecto"=>"$id"));
+        return $coleccionTarea->find();
     }
 
     public function registrarEmpleado($empleado){

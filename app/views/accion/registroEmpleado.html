@@ -51,22 +51,12 @@
 
                             </div>
                             <br>
-                            <div class="row">
-
-                                <div class="col-md-2"></div>
-                                <div class="col-md-2"><label>Seleccionar Proyecto:</label></div>
-                                <div class="col-md-5">
-                                    <select id="combo-proyecto" class="form-control" name="id_proyecto" required>
-                                        {{COMBO_PROYECTOS}}
-                                    </select>
-                                </div>
-
-                            </div>
+                           
                             <hr>
                             <div>
                                 <h2><strong>Registro de Tareas Por Empleado </strong></h2><br>
                                 <div id="grupo-tareas">
-
+                                    {{grupo_tareas}}
                                 </div>
                             </div>
                             <br><br>
@@ -90,11 +80,7 @@
     //funcion para que se ejecute el script cuando termine de cargar
     $(document).ready(function () {
 
-        $("#combo-proyecto").on("click", function () {
-            var id = $(this).val();
-            // console.log($(this).val());
-            cargarTareas(id)
-        });
+      cargarEventos();
 
 
         function cargarEventos() {
@@ -112,10 +98,9 @@
             });
         }
 
-        function cargarTareas(id1) {
+        function cargarTareas() {
             var datos = {
-                "mode": "cargar-tareas",
-                "id": id1
+                "mode": "cargar-tareas"
             }
             realizarAjaxTareas(datos);
         }

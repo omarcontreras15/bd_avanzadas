@@ -27,29 +27,27 @@ class User extends Controller
     {
         $contenido = $this->getTemplate("./app/views/accion/registroEmpleado.html");
         $this->view = $this->renderView($this->view, "{{TITULO}}", "Registrar Empleado");
-        $combo = "<option value='ninguno'>Ninguno</option>";
-        $listadoProyectos = $this->userModel->listarProyectos();
-        foreach ($listadoProyectos as $key => $value) {
-            $combo .= "<option value='" . (string)$key . "'>" . $value['nombre'] . "</option>";
-        }
-        $contenido = $this->renderView($contenido, "{{COMBO_PROYECTOS}}", $combo);
+        $html_tareas=$this->cargarTareas();
+        $contenido = $this->renderView($contenido, "{{grupo_tareas}}", $html_tareas);
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $contenido);
         $this->showView($this->view);
     }
 
-    public function cargarTareas($id)
+    public function cargarTareas()
     {
         $tareas = "";
         $contenido = $this->getTemplate("./app/views/components/tareas-empleado.html");
-        $listaTareas = $this->userModel->listarTareasProyecto($id);
+        $listaTareas = $this->userModel->listarTareasProyecto();
         foreach ($listaTareas as $key => $value) {
             $temp = $contenido;
+            $proyecto=$this->userModel->buscarNomProyecto($value["id_proyecto"]);
+            $temp = $this->renderView($temp, "{{NOM_PROYECTO}}", $proyecto);
             $temp = $this->renderView($temp, "{{NOM_TAREA}}", $value['nom_tarea']);
             $temp = $this->renderView($temp, "{{ID}}", ((string)$key));
             $temp = $this->renderView($temp, "{{form_tarea}}"," ");
             $tareas .= $temp;
         }
-        echo $tareas;
+        return $tareas;
     }
 
     public function cargarTareasEditar($id_proyecto, $arrayTareas)
