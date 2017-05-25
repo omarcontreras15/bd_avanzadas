@@ -1,6 +1,7 @@
 <div class=" col-md-12 div-tarea">
-    <p align="left"><label>Proyecto: {{NOM_PROYECTO}}</label</p>
-    <p align="left"><label>Tarea: {{NOM_TAREA}}: </label><input type="checkbox" class="tareas" id="{{ID}}" name="tareas-empleados[]" value="{{ID}}"></p>
+    <input type="hidden" name="id_proyecto" value="{{id_proyecto}}">
+    <p align="left"><label>Proyecto: {{NOM_PROYECTO}} </label><label> - Tarea: {{NOM_TAREA}}: </label><input type="checkbox" class="tareas" id="{{ID}}" name="tareas-empleados[]" value="{{ID}}"></p>
+    <p align="left"></p>
     <div class="col-md-6" id="formulario-{{ID}}">
         {{form_tarea}}
     </div><br>

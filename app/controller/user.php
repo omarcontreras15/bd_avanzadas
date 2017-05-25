@@ -43,6 +43,7 @@ class User extends Controller
             $proyecto=$this->userModel->buscarNomProyecto($value["id_proyecto"]);
             $temp = $this->renderView($temp, "{{NOM_PROYECTO}}", $proyecto);
             $temp = $this->renderView($temp, "{{NOM_TAREA}}", $value['nom_tarea']);
+             $temp = $this->renderView($temp, "{{id_proyecto}}", $value['nom_tarea']);
             $temp = $this->renderView($temp, "{{ID}}", ((string)$key));
             $temp = $this->renderView($temp, "{{form_tarea}}"," ");
             $tareas .= $temp;
@@ -60,6 +61,9 @@ class User extends Controller
             $temp = $contenido;
             $temp = $this->renderView($temp, "{{NOM_TAREA}}", $value['nom_tarea']);
             $temp = $this->renderView($temp, "{{id_tarea}}", ((string)$key));
+            $proyecto=$this->userModel->buscarNomProyecto($value["id_proyecto"]);
+            $temp=$this->renderView($temp, "{{id_proyecto}}",$value["id_proyecto"]);
+            $temp=$this->renderView($temp, "{{NOM_PROYECTO}}",$proyecto);
 
             $formTarea=$this->getTemplate("./app/views/components/form-editar-tareas-empleado.html");
 
@@ -164,21 +168,10 @@ class User extends Controller
             $contenido = $this->renderView($contenido, "{{telefono}}", $value['telefono']);
             $contenido = $this->renderView($contenido, "{{direccion}}", $value['direccion']);
         }
-        $combo = "<option value='ninguno'>Ninguno</option>";
-        $listadoProyectos = $this->userModel->listarProyectos();
-        foreach ($listadoProyectos as $key => $value) {
-            if(!((string)$key==$idProyecto)) {
-                $combo .= "<option value='" . (string)$key . "'>" . $value['nombre'] . "</option>";
-            }else if($idProyecto=="ninguno"){
 
-            }else{
-                $combo .= "<option selected value='" . (string)$key . "'>" . $value['nombre'] . "</option>";
-            }
-        }
         $htmlTareas=$this->cargarTareasEditar($idProyecto,$tareas);
         $contenido = $this->renderView($contenido, "{{grupo_tareas}}", $htmlTareas);
         $contenido = $this->renderView($contenido, "{{id_empleado}}", $id);
-        $contenido = $this->renderView($contenido, "{{COMBO_PROYECTOS}}", $combo);
         $this->view = $this->renderView($this->view, "{{CONTENIDO}}", $contenido);
         $this->showView($this->view);
     }
@@ -201,7 +194,7 @@ class User extends Controller
         $proyectos = $this->userModel->listarProyectos();
         $stringProyectos = "";
         foreach ($proyectos as $key => $val) {
-            $stringProyectos .= "<option value='" . $val["nombre"] . "'>" . $val["nombre"] . "</option>";
+            $stringProyectos .= "<option value='" . $val["_id"] . "'>" . $val["nombre"] . "</option>";
         }
         $tablaHtml = $this->getTemplate("./app/views/accion/realizaTarea.html");
         $tablaHtml = $this->renderView($tablaHtml, "{{PROYECTO}}", $stringProyectos);
@@ -230,8 +223,9 @@ class User extends Controller
         foreach ($listadoTareas as $key => $val) {
             $tablaHtml = $this->getTemplate("./app/views/components/tablaTareas.html");
             $tablaHtml = $this->renderView($tablaHtml, "{{codigo}}", $val["codigo"]);
-            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nombre"]);
-            $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $val["proyecto"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{nombre}}", $val["nom_tarea"]);
+            $proyecto=$this->userModel->buscarNomProyecto($val["id_proyecto"]);
+            $tablaHtml = $this->renderView($tablaHtml, "{{proyecto}}", $proyecto);
             $var1 = "<a href='index.php?mode=editarPieza&id=" . (string)$key . "'>
                 <button type='button' class='btn btn-warning'>Editar</button></a>&nbsp           
                 <button onclick=realizarAjax('" . (string)$key . "') type='button' class='btn btn-danger borrar'>Borrar</button>";

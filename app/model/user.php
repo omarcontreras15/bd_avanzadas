@@ -91,7 +91,7 @@ class UserModel{
     public function registrarTarea($form){
         $connection = new Mongo(); 
         $coleccionTarea = $connection->admin->tarea; 
-        $tarea = array("codigo"=> $form['codigo'], "nombre" => $form['nombre'], "proyecto"=>$form['proyecto']); 
+        $tarea = array("codigo"=> $form['codigo'], "nom_tarea" => $form['nombre'], "id_proyecto"=>$form['proyecto']); 
         $coleccionTarea->insert($tarea); 
         $connection->close();
        return "TAREA REGISTRADA CORRECTAMENTE";
