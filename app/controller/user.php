@@ -93,31 +93,8 @@ class User extends Controller
     public function registrarEmpleado($form)
     {
         $empleado = $this->userModel->buscarEmpleadoCC($form['cc']);
-
         if ($empleado->count() == 0) {
-            $tareas = array();
-            if (isset($form["tareas-empleados"])) {
-                foreach ($form["tareas-empleados"] as $element) {
-
-                    $tarea = array(
-                        "id_tarea" => $element,
-                        "horas_trabajo" => (integer)$form["horas-trabajo-" . $element],
-                        "cargo" => $form["cargo-" . $element]
-                    );
-
-                    array_unshift($tareas, $tarea);
-                }
-            } else {
-                array_unshift($tareas, array());
-            }
-            $empleado = array(
-                "nombre_empleado" => $form['nombre_empleado'],
-                "cc" => (integer)$form['cc'],
-                "telefono" => (integer)$form['telefono'],
-                "direccion" => $form['direccion'],
-                "id_proyecto" => $form['id_proyecto'],
-                "tareas" => $tareas
-            );
+            $empleado=$this->armarArrayEmpleado($form);
             $this->userModel->registrarEmpleado($empleado);
             echo "<script>alert('El empleado  se registro exitosamente!'); window.location='index.php?mode=agregarEmpleado';</script>";
         } else {
@@ -125,6 +102,34 @@ class User extends Controller
         }
 
     }
+
+    public function armarArrayEmpleado($form){
+        $tareas = array();
+        if (isset($form["tareas-empleados"])) {
+            foreach ($form["tareas-empleados"] as $element) {
+
+                $tarea = array(
+                    "id_tarea" => $element,
+                    "horas_trabajo" => (integer)$form["horas-trabajo-" . $element],
+                    "cargo" => $form["cargo-" . $element]
+                );
+
+                array_unshift($tareas, $tarea);
+            }
+        } else {
+            array_unshift($tareas, array());
+        }
+        $empleado = array(
+            "nombre_empleado" => $form['nombre_empleado'],
+            "cc" => (integer)$form['cc'],
+            "telefono" => (integer)$form['telefono'],
+            "direccion" => $form['direccion'],
+            "id_proyecto" => $form['id_proyecto'],
+            "tareas" => $tareas
+        );
+        return $empleado;
+    }
+
 
 
     public function consultarEmpleados()
@@ -177,8 +182,9 @@ class User extends Controller
     }
 
     public function actualizarEmpleado($form){
-        $this->eliminarEmpleado($form['id_empleado']);
-        $this->registrarEmpleado($form);
+        $empleado=$this->armarArrayEmpleado($form);
+        $this->userModel->actualizarEmpleado($empleado, $form['id_empleado']);
+        echo "<script>alert('Se ha actualizado la informacion satisfactoriamente'); window.location='index.php?mode=consultarEmpleado';</script>";
     }
 
 

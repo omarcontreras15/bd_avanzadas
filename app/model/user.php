@@ -68,6 +68,13 @@ class UserModel{
         $connection->close();
     }
 
+    public function actualizarEmpleado($empleado, $id){
+        $connection = new Mongo();
+        $coleccionEmpleado = $connection->admin->empleado;
+        $coleccionEmpleado->update((array('_id' => new MongoId($id))), $empleado);
+        $connection->close();
+    }
+
     public function buscarEmpleadoCC($cc){
         $connection = new Mongo();
         $coleccionEmpleado = $connection->admin->empleado;
