@@ -58,7 +58,7 @@ class UserModel{
         $connection = new Mongo();
         $coleccionTarea = $connection->admin->tarea;
         $connection->close();
-        return $coleccionTarea->find();
+        return $coleccionTarea->find()->sort(array("id_proyecto"=>1));
     }
 
     public function registrarEmpleado($empleado){

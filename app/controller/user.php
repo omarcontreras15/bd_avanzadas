@@ -68,7 +68,7 @@ class User extends Controller
             $formTarea=$this->getTemplate("./app/views/components/form-editar-tareas-empleado.html");
 
             foreach ($arrayTareas as $tarea){
-                if((string)$key== $tarea['id_tarea']){
+                if(isset($tarea['id_tarea']) && (string)$key== $tarea['id_tarea']){
                     $temp = $this->renderView($temp, "{{CHECKED}}","CHECKED");
                     $formTarea=$this->renderView($formTarea, "{{ID_TAREA}}",$tarea['id_tarea']);
                     $formTarea=$this->renderView($formTarea, "{{horas_trabajo}}",$tarea['horas_trabajo']);
