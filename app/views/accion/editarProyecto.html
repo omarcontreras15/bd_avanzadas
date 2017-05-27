@@ -8,7 +8,8 @@
                     <hr>
 
                     <form role="form" method="post" action="index.php" style="margin-right:50px">
-                        <input type="hidden" name="mode" value="agregarProyectoFormulario">
+                        <input type="hidden" name="mode" value="editarProyectoFormulario">
+                        <input type="hidden" name="id_" value="{{ID_PROYECTO}}">
                             <div class="col-xs-12">
                                 <div class="col-md-9">
                                     <div class="form-group">
@@ -36,7 +37,7 @@
                                             <div class="col-md-2"><label>Ciudad:</label></div>
                                             <div class="col-md-4">
                                             <select class="form-control" name="ciudad">
-                                            <option value="ciudad">{{CIUDAD}}</option>  
+                                            <option value="{{CIUDAD}}">{{CIUDAD}}</option>  
                                             <option value="Bogotá">Bogotá</option>
                                             <option value="Medellin">Medellin</option>
                                             <option value="Cali">Cali</option>

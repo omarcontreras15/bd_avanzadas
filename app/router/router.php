@@ -64,6 +64,10 @@ class Router {
                     $this->user->eliminarTarea($_GET);
                     break;
 
+                case "editarTarea":
+                    $this->user->showFromEditTarea($_GET["id"]);
+                    break;
+
                     default:
                     header("Location:index.php");
                     break;
@@ -81,6 +85,15 @@ class Router {
                 case "realizarTareaFormulario":
                     $this->user->agregarFormTarea($_POST);         
                     break;
+                
+                case "editarProyectoFormulario":
+                    $this->user->editarProyectoFormulario($_POST);
+                    break;
+
+                case "guardarEditTareaFormulario":
+                    $this->user->editarTareaFormulario($_POST);
+                    break;
+                
 
 
                 default:
